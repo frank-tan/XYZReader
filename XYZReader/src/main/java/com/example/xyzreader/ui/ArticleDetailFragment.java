@@ -146,27 +146,32 @@ public class ArticleDetailFragment extends Fragment implements
 
     public void setToolbarImage() {
         if (mCursor != null) {
-            ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
-                    .get(mCursor.getString(ArticleLoader.Query.PHOTO_URL), new ImageLoader.ImageListener() {
-                        @Override
-                        public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
-                            Log.i(TAG,"onResonse");
-                            Bitmap bitmap = imageContainer.getBitmap();
-                            if (bitmap != null) {
-                                Palette p = Palette.generate(bitmap, 12);
-                                mMutedColor = p.getDarkMutedColor(0xFF333333);
-                                mPhotoView.setImageBitmap(imageContainer.getBitmap());
-                                mRootView.findViewById(R.id.meta_bar)
-                                        .setBackgroundColor(mMutedColor);
-                            }
-                        }
-
-                        @Override
-                        public void onErrorResponse(VolleyError volleyError) {
-
-                        }
-                    });
+            setImageWithUrl(mCursor.getString(ArticleLoader.Query.THUMB_URL));
+            setImageWithUrl(mCursor.getString(ArticleLoader.Query.PHOTO_URL));
         }
+    }
+
+    private void setImageWithUrl (String url) {
+        ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
+                .get(url, new ImageLoader.ImageListener() {
+                    @Override
+                    public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
+                        Log.i(TAG,"onResonse");
+                        Bitmap bitmap = imageContainer.getBitmap();
+                        if (bitmap != null) {
+                            Palette p = Palette.generate(bitmap, 12);
+                            mMutedColor = p.getDarkMutedColor(0xFF333333);
+                            mPhotoView.setImageBitmap(imageContainer.getBitmap());
+                            mRootView.findViewById(R.id.meta_bar)
+                                    .setBackgroundColor(mMutedColor);
+                        }
+                    }
+
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+
+                    }
+                });
     }
 
     @Override
