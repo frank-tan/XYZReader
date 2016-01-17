@@ -7,6 +7,7 @@ import java.net.URL;
 
 public class Config {
     public static final URL BASE_URL;
+    private static final String TAG = "XYZReader";
 
     static {
         String urlString = "https://dl.dropboxusercontent.com/u/231329/xyzreader_data/data.json";
@@ -14,7 +15,7 @@ public class Config {
         try {
             url = new URL(urlString);
         } catch (MalformedURLException ignored) {
-            Log.e("XYZReader","Cannot resolve url: " + urlString);
+            Log.e(TAG,"Cannot resolve url: " + urlString);
         }
 
         BASE_URL = url;

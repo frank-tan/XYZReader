@@ -15,7 +15,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class RemoteEndpointUtil {
-    private static final String TAG = "RemoteEndpointUtil";
+    private static final String TAG = "XYZReader";
 
     private RemoteEndpointUtil() {
     }
