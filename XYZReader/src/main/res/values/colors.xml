@@ -21,6 +21,8 @@
     <color name="theme_primary">#00695C</color>
     <color name="theme_primary_dark">#004D40</color>
     <color name="theme_accent">#FF4081</color>
-    <color name="ltgray">#ffe0e0e0</color>
     <color name="white">#fff</color>
+    <color name="subtitle_color">#6000</color>
+    <color name="artical_title_color">#fff</color>
+    <color name="article_byline">#8fff</color>
 </resources>
