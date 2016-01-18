@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -23,6 +24,9 @@ import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
 import com.example.xyzreader.data.UpdaterService;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 /**
  * An activity representing a list of Articles. This activity has different presentations for
@@ -31,13 +35,14 @@ import com.example.xyzreader.data.UpdaterService;
  * activity presents a grid of items as cards.
  */
 public class ArticleListActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = "XYZReader";
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
     private Activity mActivity;
+    private boolean mIsRefreshing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +50,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_article_list);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         getLoaderManager().initLoader(0, null, this);
@@ -52,7 +58,15 @@ public class ArticleListActivity extends AppCompatActivity implements
         if (savedInstanceState == null) {
             refresh();
         }
+
         mActivity = this;
+    }
+
+    @Override
+    public void onRefresh() {
+        if(!mIsRefreshing) {
+            refresh();
+        }
     }
 
     private void refresh() {
@@ -71,8 +85,6 @@ public class ArticleListActivity extends AppCompatActivity implements
         super.onStop();
         unregisterReceiver(mRefreshingReceiver);
     }
-
-    private boolean mIsRefreshing = false;
 
     private BroadcastReceiver mRefreshingReceiver = new BroadcastReceiver() {
         @Override
@@ -130,9 +142,9 @@ public class ArticleListActivity extends AppCompatActivity implements
                 @Override
                 public void onClick(View view) {
                     ActivityOptionsCompat options = ActivityOptionsCompat.
-                            makeSceneTransitionAnimation(mActivity, (View)(vh.thumbnailView), "backdrop_image");
+                            makeSceneTransitionAnimation(mActivity, (View) (vh.thumbnailView), "backdrop_image");
                     startActivity(new Intent(Intent.ACTION_VIEW,
-                            ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))),options.toBundle());
+                            ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))), options.toBundle());
                 }
             });
             return vh;
@@ -149,10 +161,40 @@ public class ArticleListActivity extends AppCompatActivity implements
                             DateUtils.FORMAT_ABBREV_ALL).toString()
                             + " by "
                             + mCursor.getString(ArticleLoader.Query.AUTHOR));
-            holder.thumbnailView.setImageUrl(
-                    mCursor.getString(ArticleLoader.Query.THUMB_URL),
-                    ImageLoaderHelper.getInstance(ArticleListActivity.this).getImageLoader());
-            holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
+
+            final DynamicHeightNetworkImageView thumbnailView = holder.thumbnailView;
+            final String thumbnailUrl = mCursor.getString(ArticleLoader.Query.THUMB_URL);
+            final float aspectRatio = mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO);
+
+            Picasso.with(getApplicationContext())
+                    .load(thumbnailUrl)
+                    .networkPolicy(NetworkPolicy.OFFLINE)
+                    .into(thumbnailView, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            Log.i(TAG, "Picasso loaded thumbnail image successfully");
+                            thumbnailView.setAspectRatio(aspectRatio);
+                        }
+
+                        @Override
+                        public void onError() {
+
+                            Log.e(TAG, "Picasso failed to load thumbnail image");
+                            Picasso.with(getApplicationContext())
+                                    .load(thumbnailUrl)
+                                    .into(thumbnailView, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+                                            Log.i(TAG, "Picasso loaded thumbnail image successfully");
+                                            thumbnailView.setAspectRatio(aspectRatio);
+                                        }
+
+                                        @Override
+                                        public void onError() {
+                                        }
+                                    });
+                        }
+                    });
         }
 
         @Override

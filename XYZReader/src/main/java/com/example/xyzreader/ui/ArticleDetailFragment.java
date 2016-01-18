@@ -2,10 +2,12 @@ package com.example.xyzreader.ui;
 
 import android.app.Fragment;
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ShareCompat;
@@ -21,10 +23,11 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 /**
  * A fragment representing a single Article detail screen. This fragment is
@@ -34,6 +37,8 @@ import com.example.xyzreader.data.ArticleLoader;
 public class ArticleDetailFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = "XYZReader";
+    private static final String THUMBNAIL = "THUMBNAIL";
+    private static final String FULL_SIZE = "FULL_SIZE";
 
     public static final String ARG_ITEM_ID = "item_id";
 
@@ -148,34 +153,72 @@ public class ArticleDetailFragment extends Fragment implements
         if (mCursor != null) {
             // load low resolution thumb nail picture first
             // It is a lot faster, so the shared element transition works well
-            setImageWithUrl(mCursor.getString(ArticleLoader.Query.THUMB_URL));
-
-            // load high resolution picture afterwards
-            setImageWithUrl(mCursor.getString(ArticleLoader.Query.PHOTO_URL));
+            setImageWithUrl(mCursor.getString(ArticleLoader.Query.THUMB_URL),THUMBNAIL);
         }
     }
 
-    private void setImageWithUrl (String url) {
-        ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
-                .get(url, new ImageLoader.ImageListener() {
+    private void setImageWithUrl (final String url, final String type) {
+        final Context appContext = getActivity().getApplicationContext();
+        final String imageUrl = url;
+        Picasso.with(appContext)
+                .load(imageUrl)
+                .networkPolicy(NetworkPolicy.OFFLINE)
+                .noPlaceholder()
+                .fit()
+                .centerCrop()
+                .into(mPhotoView, new Callback() {
                     @Override
-                    public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
-                        Log.i(TAG,"onResonse");
-                        Bitmap bitmap = imageContainer.getBitmap();
-                        if (bitmap != null) {
-                            Palette p = Palette.generate(bitmap, 12);
-                            mMutedColor = p.getDarkMutedColor(0xFF333333);
-                            mPhotoView.setImageBitmap(imageContainer.getBitmap());
-                            mRootView.findViewById(R.id.meta_bar)
-                                    .setBackgroundColor(mMutedColor);
+                    public void onSuccess() {
+                        Log.i(TAG, "Picasso loaded backdrop image successfully from local cache");
+                        // load high resolution picture afterwards
+                        if(type == THUMBNAIL) {
+                            setTitleBackgroundDarkMutedColour();
+                            setImageWithUrl(mCursor.getString(ArticleLoader.Query.PHOTO_URL),FULL_SIZE);
                         }
                     }
 
                     @Override
-                    public void onErrorResponse(VolleyError volleyError) {
+                    public void onError() {
 
+                        Log.e(TAG, "Picasso failed to load backdrop image");
+                        Picasso.with(appContext)
+                                .load(imageUrl)
+                                .noPlaceholder()
+                                .fit()
+                                .centerCrop()
+                                .into(mPhotoView, new Callback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        Log.i(TAG, "Picasso loaded backdrop image successfully from Network");
+                                        // load high resolution picture afterwards
+                                        if(type == THUMBNAIL) {
+                                            setTitleBackgroundDarkMutedColour();
+                                            setImageWithUrl(mCursor.getString(ArticleLoader.Query.PHOTO_URL),FULL_SIZE);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onError() {
+
+                                    }
+                                });
                     }
                 });
+    }
+
+    private void setTitleBackgroundDarkMutedColour () {
+        Palette.PaletteAsyncListener paletteListener = new Palette.PaletteAsyncListener() {
+            public void onGenerated(Palette palette) {
+                mMutedColor = palette.getDarkMutedColor(0xFF333333);
+                mRootView.findViewById(R.id.meta_bar)
+                        .setBackgroundColor(mMutedColor);
+            }
+        };
+
+        Bitmap bitmap = ((BitmapDrawable)mPhotoView.getDrawable()).getBitmap();
+        if (bitmap != null && !bitmap.isRecycled()) {
+            Palette.from(bitmap).generate(paletteListener);
+        }
     }
 
     @Override
