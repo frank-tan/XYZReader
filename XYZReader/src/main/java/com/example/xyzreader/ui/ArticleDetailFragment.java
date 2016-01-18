@@ -146,7 +146,11 @@ public class ArticleDetailFragment extends Fragment implements
 
     public void setToolbarImage() {
         if (mCursor != null) {
+            // load low resolution thumb nail picture first
+            // It is a lot faster, so the shared element transition works well
             setImageWithUrl(mCursor.getString(ArticleLoader.Query.THUMB_URL));
+
+            // load high resolution picture afterwards
             setImageWithUrl(mCursor.getString(ArticleLoader.Query.PHOTO_URL));
         }
     }
