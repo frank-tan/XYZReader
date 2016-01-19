@@ -23,7 +23,7 @@
     <color name="theme_accent">#FF4081</color>
     <color name="white">#fff</color>
     <color name="subtitle_color">#6000</color>
-    <color name="artical_title_color">#fff</color>
+    <color name="article_title_color">#fff</color>
     <color name="article_byline">#8fff</color>
     <color name="default_mute_background">#333</color>
 </resources>

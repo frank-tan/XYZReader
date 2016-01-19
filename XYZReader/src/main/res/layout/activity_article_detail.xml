@@ -11,6 +11,7 @@
         android:layout_height="@dimen/detail_toolbar_height"
         android:theme="@style/Theme.Bacon.DetailActivity"
         android:fitsSystemWindows="true"
+        android:transitionGroup="true"
         android:elevation="@dimen/appbar_elevation">
 
         <android.support.design.widget.CollapsingToolbarLayout

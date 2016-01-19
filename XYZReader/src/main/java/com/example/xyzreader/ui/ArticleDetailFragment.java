@@ -205,7 +205,9 @@ public class ArticleDetailFragment extends Fragment implements
 
                                     @Override
                                     public void onError() {
-
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                            getActivity().startPostponedEnterTransition();
+                                        }
                                     }
                                 });
                     }

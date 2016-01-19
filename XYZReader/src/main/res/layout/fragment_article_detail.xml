@@ -8,7 +8,8 @@
     <ScrollView
         android:id="@+id/scrollview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:transitionGroup="true">
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -41,7 +42,7 @@
                         android:layout_height="wrap_content"
                         android:paddingBottom="@dimen/detail_metabar_title_bottom_padding"
                         android:fontFamily="sans-serif-condensed"
-                        android:textColor="@color/artical_title_color"
+                        android:textColor="@color/article_title_color"
                         android:textStyle="bold"
                         android:textSize="@dimen/detail_title_text_size"
                         android:lineSpacingMultiplier="0.9"/>
