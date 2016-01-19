@@ -23,7 +23,7 @@
         <item name="colorControlNormal">@color/white</item>
     </style>
 
-    <style name="Theme.Bacon.WhiteText" parent="Theme.Bacon">
+    <style name="Theme.Bacon.DetailActivity" parent="Theme.Bacon">
         <item name="android:textColorPrimary">@android:color/white</item>
     </style>
 

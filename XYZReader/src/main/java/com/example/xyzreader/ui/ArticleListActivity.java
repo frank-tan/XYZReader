@@ -142,7 +142,7 @@ public class ArticleListActivity extends AppCompatActivity implements
                 @Override
                 public void onClick(View view) {
                     ActivityOptionsCompat options = ActivityOptionsCompat.
-                            makeSceneTransitionAnimation(mActivity, (View) (vh.thumbnailView), "backdrop_image");
+                            makeSceneTransitionAnimation(mActivity, vh.thumbnailView, getString(R.string.backdrop_shared_element_transition));
                     startActivity(new Intent(Intent.ACTION_VIEW,
                             ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))), options.toBundle());
                 }

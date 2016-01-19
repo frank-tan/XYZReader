@@ -9,7 +9,7 @@
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/detail_toolbar_height"
-        android:theme="@style/Theme.Bacon.WhiteText"
+        android:theme="@style/Theme.Bacon.DetailActivity"
         android:fitsSystemWindows="true"
         android:elevation="@dimen/appbar_elevation">
 
@@ -31,7 +31,7 @@
                 android:scaleType="centerCrop"
                 android:fitsSystemWindows="true"
                 app:layout_collapseMode="parallax"
-                android:transitionName="backdrop_image" />
+                android:transitionName="@string/backdrop_shared_element_transition" />
 
             <View
                 android:layout_width="match_parent"
@@ -44,7 +44,7 @@
                 android:layout_height="?attr/actionBarSize"
                 android:layout_width="match_parent"
                 android:id="@+id/toolbar"
-                android:theme="@style/Theme.Bacon.WhiteText"
+                android:theme="@style/Theme.Bacon.DetailActivity"
                 app:layout_collapseMode="pin"
                 />
 

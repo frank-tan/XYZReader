@@ -8,7 +8,15 @@
         <item name="colorControlNormal">@color/white</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+
         <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowActivityTransitions">true</item>
+    </style>
+
+    <style name="Theme.Bacon.DetailActivity" parent="Theme.Bacon">
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:windowEnterTransition">@transition/details_window_enter_transition</item>
+        <item name="android:windowExitTransition">@transition/details_window_enter_transition</item>
     </style>
 
 </resources>
