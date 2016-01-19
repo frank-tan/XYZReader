@@ -11,6 +11,13 @@
     </slide>
     <slide
         xmlns:android="http://schemas.android.com/apk/res/android"
+        android:slideEdge="bottom">
+        <targets>
+            <target android:targetId="@id/share_fab"/>
+        </targets>
+    </slide>
+    <slide
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:slideEdge="top">
         <targets>
             <target android:targetId="@id/appBarLayout"/>
