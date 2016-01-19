@@ -153,7 +153,7 @@ public class ArticleDetailFragment extends Fragment implements
         if (mCursor != null) {
             // load low resolution thumb nail picture first
             // It is a lot faster, so the shared element transition works well
-            setImageWithUrl(mCursor.getString(ArticleLoader.Query.THUMB_URL),THUMBNAIL);
+            setImageWithUrl(mCursor.getString(ArticleLoader.Query.THUMB_URL), THUMBNAIL);
         }
     }
 
@@ -173,6 +173,9 @@ public class ArticleDetailFragment extends Fragment implements
                         // load high resolution picture afterwards
                         if(type == THUMBNAIL) {
                             setTitleBackgroundDarkMutedColour();
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                getActivity().startPostponedEnterTransition();
+                            }
                             setImageWithUrl(mCursor.getString(ArticleLoader.Query.PHOTO_URL),FULL_SIZE);
                         }
                     }
@@ -193,6 +196,9 @@ public class ArticleDetailFragment extends Fragment implements
                                         // load high resolution picture afterwards
                                         if(type == THUMBNAIL) {
                                             setTitleBackgroundDarkMutedColour();
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                                getActivity().startPostponedEnterTransition();
+                                            }
                                             setImageWithUrl(mCursor.getString(ArticleLoader.Query.PHOTO_URL),FULL_SIZE);
                                         }
                                     }
