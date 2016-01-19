@@ -154,13 +154,14 @@ public class ArticleListActivity extends AppCompatActivity implements
         public void onBindViewHolder(ViewHolder holder, int position) {
             mCursor.moveToPosition(position);
             holder.titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
-            holder.subtitleView.setText(
-                    DateUtils.getRelativeTimeSpanString(
-                            mCursor.getLong(ArticleLoader.Query.PUBLISHED_DATE),
-                            System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
-                            DateUtils.FORMAT_ABBREV_ALL).toString()
-                            + " by "
-                            + mCursor.getString(ArticleLoader.Query.AUTHOR));
+            String subTitleText = DateUtils.getRelativeTimeSpanString(
+                    mCursor.getLong(ArticleLoader.Query.PUBLISHED_DATE),
+                    System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
+                    DateUtils.FORMAT_ABBREV_ALL).toString()
+                    + " by "
+                    + mCursor.getString(ArticleLoader.Query.AUTHOR);
+
+            holder.subtitleView.setText(subTitleText);
 
             final DynamicHeightNetworkImageView thumbnailView = holder.thumbnailView;
             final String thumbnailUrl = mCursor.getString(ArticleLoader.Query.THUMB_URL);
@@ -178,8 +179,6 @@ public class ArticleListActivity extends AppCompatActivity implements
 
                         @Override
                         public void onError() {
-
-                            Log.e(TAG, "Picasso failed to load thumbnail image");
                             Picasso.with(getApplicationContext())
                                     .load(thumbnailUrl)
                                     .into(thumbnailView, new Callback() {
@@ -191,6 +190,7 @@ public class ArticleListActivity extends AppCompatActivity implements
 
                                         @Override
                                         public void onError() {
+                                            Log.e(TAG, "Picasso failed to load thumbnail image");
                                         }
                                     });
                         }

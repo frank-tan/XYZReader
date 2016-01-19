@@ -32,7 +32,8 @@
                 android:scaleType="centerCrop"
                 android:fitsSystemWindows="true"
                 app:layout_collapseMode="parallax"
-                android:transitionName="@string/backdrop_shared_element_transition" />
+                android:transitionName="@string/backdrop_shared_element_transition"
+                android:contentDescription="@string/backdrop_image_description"/>
 
             <View
                 android:layout_width="match_parent"
@@ -65,7 +66,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_share"
-        android:layout_gravity="bottom|right"
+        android:layout_gravity="bottom|right|end"
         android:layout_margin="@dimen/fab_margin"
         android:clickable="true"
         app:backgroundTint="@color/theme_accent"

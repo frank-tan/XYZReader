@@ -39,7 +39,6 @@ public class ArticleDetailFragment extends Fragment implements
     private static final String TAG = "XYZReader";
     private static final String THUMBNAIL = "THUMBNAIL";
     private static final String FULL_SIZE = "FULL_SIZE";
-
     public static final String ARG_ITEM_ID = "item_id";
 
     private Cursor mCursor;
@@ -92,9 +91,9 @@ public class ArticleDetailFragment extends Fragment implements
             Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
 
-        mScrollView = (ScrollView) mRootView.findViewById(R.id.scrollview);
+        ScrollView scrollView = (ScrollView) mRootView.findViewById(R.id.scrollview);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mScrollView.setNestedScrollingEnabled(true);
+            scrollView.setNestedScrollingEnabled(true);
         }
 
         mPhotoView = (ImageView) getActivity().findViewById(R.id.photo);
@@ -153,15 +152,15 @@ public class ArticleDetailFragment extends Fragment implements
         if (mCursor != null) {
             // load low resolution thumb nail picture first
             // It is a lot faster, so the shared element transition works well
+            // High resolution image will be load later
             setImageWithUrl(mCursor.getString(ArticleLoader.Query.THUMB_URL), THUMBNAIL);
         }
     }
 
     private void setImageWithUrl (final String url, final String type) {
         final Context appContext = getActivity().getApplicationContext();
-        final String imageUrl = url;
         Picasso.with(appContext)
-                .load(imageUrl)
+                .load(url)
                 .networkPolicy(NetworkPolicy.OFFLINE)
                 .noPlaceholder()
                 .fit()
@@ -171,7 +170,7 @@ public class ArticleDetailFragment extends Fragment implements
                     public void onSuccess() {
                         Log.i(TAG, "Picasso loaded backdrop image successfully from local cache");
                         // load high resolution picture afterwards
-                        if(type == THUMBNAIL) {
+                        if(type.equals(THUMBNAIL)) {
                             setTitleBackgroundDarkMutedColour();
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                 getActivity().startPostponedEnterTransition();
@@ -182,10 +181,8 @@ public class ArticleDetailFragment extends Fragment implements
 
                     @Override
                     public void onError() {
-
-                        Log.e(TAG, "Picasso failed to load backdrop image");
                         Picasso.with(appContext)
-                                .load(imageUrl)
+                                .load(url)
                                 .noPlaceholder()
                                 .fit()
                                 .centerCrop()
@@ -194,7 +191,7 @@ public class ArticleDetailFragment extends Fragment implements
                                     public void onSuccess() {
                                         Log.i(TAG, "Picasso loaded backdrop image successfully from Network");
                                         // load high resolution picture afterwards
-                                        if(type == THUMBNAIL) {
+                                        if(type.equals(THUMBNAIL)) {
                                             setTitleBackgroundDarkMutedColour();
                                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                                 getActivity().startPostponedEnterTransition();
@@ -205,6 +202,7 @@ public class ArticleDetailFragment extends Fragment implements
 
                                     @Override
                                     public void onError() {
+                                        Log.e(TAG, "Picasso failed to load backdrop image");
                                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                             getActivity().startPostponedEnterTransition();
                                         }
